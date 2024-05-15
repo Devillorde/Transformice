@@ -43,7 +43,7 @@ local pixeis = {
 local dev = { "Devillorde#1090", "Desolate#2367" }
 local popups, data, containers, games = {}, {}, {}, {}
 local popupIndex, popupCooldown = 0, 5
-local items = {{img = images[3], name = images[3].desc, href = "perk_freeze", info = "Coffins will freeze the target for 1 round"}, {img = images[5], name = images[5].desc, href = "perk_double", info = "Knife will double damage"}, {img = images[6], name = images[6].desc, href = "perk_reload", info = "Will replace the current bullet for another"}, {img = images[7], name = images[7].desc, href = "perk_life", info = "Adds one life if not full nor in critical condition"}, {img = images[13], name = images[13].desc, href = "perk_reveal", info = "Reveals the current bullet"}} -- os index dos perks que vão gerar aleatoriamente
+local items = {{img = images[3], name = images[3].desc, href = "perk_freeze", info = "Coffins will freeze the target for 1 round"}, {img = images[5], name = images[5].desc, href = "perk_double", info = "Knife will double damage if is a real bullet"}, {img = images[6], name = images[6].desc, href = "perk_reload", info = "Will replace the current bullet for another"}, {img = images[7], name = images[7].desc, href = "perk_life", info = "Adds one life if not full nor in critical condition"}, {img = images[13], name = images[13].desc, href = "perk_reveal", info = "Reveals the current bullet"}} -- os index dos perks que vão gerar aleatoriamente
 local sound = {letal = 'bouboum/x_explosion_6', fake = 'cite18/allumette', double = 'cite18/foudre2', reload = 'fortoresse/x_recharge_fin', reveal ='bouboum/x_bonus', life = 'cite18/maudit', freeze = 'transformice/son/gel', unfreeze = 'tfmadv/elixir', knife = 'cite18/epee'}
 function fitOrientation(b, s, cB, cS)
     cB = type(cB) == "string" and ((tonumber(cB) >= 0 and tonumber(cB) <= 99.9) and b + (s * (tonumber(cB)/100)) or b + (s * .99)) or cB < 0 and (b + s <= math.abs(cB) and b or b + s + cB) or cB >= b + s and (b + s) - 10 or b + cB
@@ -168,8 +168,7 @@ function initHUDs()
         y = y + 32
     end
     helpHUD:addText({text = "Shooting yourself with a blank bullet makes it skip the other player's turn", x = 0, y = 200, h = 20, size = 12, alpha = 0, align = "left"})
-    helpHUD:addText({text = "Two or less hearts makes the player get in a critical condition", x = 0, y = 230, h = 20, size = 12, alpha = 0, align = "left"})
-    
+    helpHUD:addText({text = "Two or less hearts makes the player get in a critical condition (fatal if hit again)", x = 0, y = 230, h = 20, size = 12, alpha = 0, align = "left"})
     helpHUD:addText({text = dev[1], y = -30, alpha = 0, size = 16, align = "left"})
     helpHUD:addText({text = dev[2], y = -30, alpha = 0, size = 16, align = "right"})
     helpHUD:addButton({img = images[18],x = -20, h = 20, href = "help_close"})
