@@ -43,7 +43,7 @@ local pixeis = {
 local dev = { "Devillorde#1090", "Desolate#2367" }
 local popups, data, containers, games = {}, {}, {}, {}
 local popupIndex, popupCooldown = 0, 5
-local items = {{img = images[3], name = images[3].desc, href = "perk_freeze", info = "Coffins will freeze the target for 1 round"}, {img = images[5], name = images[5].desc, href = "perk_double", info = "Knife will double damage"}, {img = images[6], name = images[6].desc, href = "perk_reload", info = "Will replace the current bullet for another"}, {img = images[7], name = images[7].desc, href = "perk_life", info = "Adds one life if not full nor in critical condition"}, {img = images[13], name = images[5].desc, href = "perk_reveal", info = "Reveals the current bullet"}} -- os index dos perks que vão gerar aleatoriamente
+local items = {{img = images[3], name = images[3].desc, href = "perk_freeze", info = "Coffins will freeze the target for 1 round"}, {img = images[5], name = images[5].desc, href = "perk_double", info = "Knife will double damage"}, {img = images[6], name = images[6].desc, href = "perk_reload", info = "Will replace the current bullet for another"}, {img = images[7], name = images[7].desc, href = "perk_life", info = "Adds one life if not full nor in critical condition"}, {img = images[13], name = images[13].desc, href = "perk_reveal", info = "Reveals the current bullet"}} -- os index dos perks que vão gerar aleatoriamente
 local sound = {letal = 'bouboum/x_explosion_6', fake = 'cite18/allumette', double = 'cite18/foudre2', reload = 'fortoresse/x_recharge_fin', reveal ='bouboum/x_bonus', life = 'cite18/maudit', freeze = 'transformice/son/gel', unfreeze = 'tfmadv/elixir', knife = 'cite18/epee'}
 function fitOrientation(b, s, cB, cS)
     cB = type(cB) == "string" and ((tonumber(cB) >= 0 and tonumber(cB) <= 99.9) and b + (s * (tonumber(cB)/100)) or b + (s * .99)) or cB < 0 and (b + s <= math.abs(cB) and b or b + s + cB) or cB >= b + s and (b + s) - 10 or b + cB
@@ -110,16 +110,7 @@ function containerAPI (containerName, t)
         addSwitch = function(self, t) return self:register(6, t) end}
     return container
 end
-brokenHUD = containerAPI("broken")
-brokenHUD:addImage({img = images[14]})
-shootChoiceHUD = containerAPI("shoot.choice", {x = 300, y = 100, w = 200, h = 200})
-shootChoiceHUD:addText({bg = 0x282828, border = 0x282828, alpha = 0.7})
-shootChoiceHUD:addText({text = "Enemy", href = "shoot_tantofaz", size = 30, y = 0, h = 40, alpha = 0})
-shootChoiceHUD:addText({text = "You", href = "shoot_you", size = 30, y = -40, h = 40, alpha = 0})
-blockScreenHUD = containerAPI("block.screen", {x = 0, y = 0, w = 800, h = 400})
-blockScreenHUD:addText({alpha = .2, bg = 0x282828, border = 0x282828})
-shootHUD = containerAPI("shoot", {x = 350, y = 350, w = 100, h = 30})
-shootHUD:addText({text = "Shoot", bg = 0x324650, alpha = 0.2, size = 18, href = "shoot"})
+
 function getPopupIndex(name, resetTimer)
     if popups[name] then
         if resetTimer then
@@ -144,13 +135,12 @@ function getGameByPlayer(playerName)
 end
 
 function init()
-    initHUDs()
     for _, v in next, {"AfkDeath", "MortCommand", "AutoNewGame", "AutoShaman", "AutoTimeLeft", "AutoScore"} do
         tfm.exec['disable' .. v]()
     end
     system.disableChatCommandDisplay(nil, true)
     tfm.exec.newGame(map)
-
+    initHUDs()
     for playerName, playerData in pairs(tfm.get.room.playerList) do
         eventNewPlayer(playerName)
     end
@@ -177,6 +167,9 @@ function initHUDs()
         helpHUD:addText({text = j.info, x = 45, y = y + 3, w = 0, h = 20, alpha = 0, size = 12, align = "left"})
         y = y + 32
     end
+    helpHUD:addText({text = "Shooting yourself with a blank bullet makes it skip the other player's turn", x = 0, y = 200, h = 20, size = 12, alpha = 0, align = "left"})
+    helpHUD:addText({text = "Two or less hearts makes the player get in a critical condition", x = 0, y = 230, h = 20, size = 12, alpha = 0, align = "left"})
+    
     helpHUD:addText({text = dev[1], y = -30, alpha = 0, size = 16, align = "left"})
     helpHUD:addText({text = dev[2], y = -30, alpha = 0, size = 16, align = "right"})
     helpHUD:addButton({img = images[18],x = -20, h = 20, href = "help_close"})
@@ -384,6 +377,8 @@ function createGame(player1, player2)
                 self:updateHearts()
                 if data[target].energy.count <= 2 and not data[target].criticalCondition then
                     data[target].criticalCondition = true
+                    ui.addTextArea(getPopupIndex("info"), "<p align='center'><a href='event:info'><font size='18' color='#ffffff'>" .. target .. " is in a critical condition</font></a></p>", self.players[1], 100, 200, 600, 0, 0x324650, 0x000000, 1, true)
+                    ui.addTextArea(getPopupIndex("info"), "<p align='center'><a href='event:info'><font size='18' color='#ffffff'>" .. target .. " is in a critical condition</font></a></p>", self.players[2], 100, 200, 600, 0, 0x324650, 0x000000, 1, true)
                 end
                 if data[target].energy.count == 0 then
                     local winner = target == self.players[1] and self.players[2] or self.players[1]
